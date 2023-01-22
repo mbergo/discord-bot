@@ -8,7 +8,7 @@ Once the bot is connected to the server, you can use the command prefix you set 
 
 To ask the bot a question, type in the following command in the channel:
 ```
-!gpt2_talk [your question]
+#talk [your question]
 ```
 ## How to run
 To run this bot, you need to have the discord bot token and the OpenAI API key. You can get them by creating an application and a bot on the Discord Developer Portal and a API key on the OpenAI portal.
