@@ -3,7 +3,7 @@ from discord.ext import commands
 import openai
 
 # Get the Discord bot token and GPT-2 API key from the openai_secret_manager
-discord_token = "<YOUR_DISCORD_TOKEN>"
+discord_token = "sys.argv[1]"
 bot = commands.Bot(command_prefix='#', description="GPT-2 Discord Bot", intents=discord.Intents.all())
 
 @bot.command()
@@ -16,7 +16,7 @@ async def talk(ctx, *, message):
         n = 1,
         stop=None,
         temperature=0.5,
-        api_key = "<YOUR_API_KEY>"
+        api_key = "sys.argv[2]"
     )
 
     # Send the response to the Discord channel
