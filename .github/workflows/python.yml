@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Python Tests
 
 on: [push]
 
@@ -27,4 +27,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        python test_bot.py
+        python ${{ secrets.discord_api_key }}${{ secrets.api_key }} test_bot.py
