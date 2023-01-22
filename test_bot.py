@@ -8,7 +8,7 @@ import sys
 class TestGPT2Talk(unittest.TestCase):
 
     def setUp(self):
-        self.bot = bot.bot
+        self.bot = bot.bot,sys.argv[1],sys.argv[2]
         self.gpt2_talk = self.bot.get_command("talk")
         self.test_channel = discord.Object(id='test_channel_id')
         self.test_server = discord.Object(id='test_server_id')
