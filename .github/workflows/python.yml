@@ -33,4 +33,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        python ${{ secrets.DISCORD_TOKEN }} ${{ secrets.API_TOKEN }} test_bot.py
+        python3 ${{ secrets.DISCORD_TOKEN }} ${{ secrets.API_TOKEN }} test_bot.py
