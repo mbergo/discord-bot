@@ -8,7 +8,7 @@ import sys
 class TestGPT2Talk(unittest.TestCase):
 
     def setUp(self):
-        self.bot = bot.bot,sys.argv[1],sys.argv[2]
+        self.bot = bot.bot
         self.gpt2_talk = self.bot.get_command("talk")
         self.test_channel = discord.Object(id='test_channel_id')
         self.test_server = discord.Object(id='test_server_id')
@@ -19,7 +19,7 @@ class TestGPT2Talk(unittest.TestCase):
         # redirect stdout to capture bot's response
         sys.stdout = io.StringIO()
         # call the gpt2_talk command
-        self.talk.callback(self.bot, self.test_message, "What is the meaning of life?")
+        self.talk.callback(self.bot,sys.argv[1],sys.argv[2], self.test_message, "What is the meaning of life?")
         # check if the bot's response is not empty
         self.assertTrue(sys.stdout.getvalue().strip())
 
