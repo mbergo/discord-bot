@@ -23,26 +23,29 @@ async def talk(ctx, *, message):
     # Send the response to the Discord channel
     await ctx.send(response.choices[0].text)
 @bot.command()
-def predy_criar_canal(room_id, channel_name, discord_token):
-    headers = {
-        "Authorization": f"Bot {discord_token}",
-        "User-Agent": "MyBot/0.0.1",
-        "Content-Type": "application/json",
-    }
+async def predy_criar_canal(ctx, room, channel, category, channel_type):
+    guild = ctx.guild
+    category = category.lower()
+    channel_type = channel_type.lower()
 
-    payload = {
-        "name": channel_name,
-        "type": 0, # 0 for text channel, 2 for voice channel
-    }
+    existing_category = discord.utils.get(guild.categories, name=category)
+    if not existing_category:
+        existing_category = await guild.create_category(category)
 
-    url = f"https://discord.com/api/guilds/{room_id}/channels"
+    existing_channel = discord.utils.get(guild.channels, name=channel)
+    if not existing_channel:
+        if channel_type == "text":
+            new_channel = await guild.create_text_channel(channel, category=existing_category)
+        elif channel_type == "voice":
+            new_channel = await guild.create_voice_channel(channel, category=existing_category)
+        else:
+            await ctx.send(f"Tipo de canal inválido. Escolha entre 'text' ou 'voice'.")
+            return
 
-    response = requests.post(url, headers=headers, json=payload)
-
-    if response.status_code == 201:
-        print(f"Successfully created channel '{channel_name}'")
+        await new_channel.send(f"Canal {channel_type} criado na sala {room}, na categoria {category}.")
     else:
-        print(f"Failed to create channel. Response: {response.text}")
+        await ctx.send(f"O canal {channel} já existe na sala {room}.")
+
 
 @bot.command()
 async def predy_whatsapp(ctx, to, message):

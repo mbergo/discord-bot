@@ -1,19 +1,14 @@
-FROM python:3.9
+FROM python:3.8-slim
 
-# create and set working directory
-RUN mkdir -p /app
 WORKDIR /app
 
-# copy requirements file
-COPY requirements.txt /app
+COPY . .
 
-# install dependencies
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN cd tests && pip install -r requirements.txt
 
-# copy the rest of the files
-COPY . /app
+ENV DISCORD_TOKEN=${{ env.DISCORD_TOKEN }}
+ENV API_KEY=${{ env.API_KEY }}
+ENV AUTH_KEY=${{ env.AUTH_KEY }}
+ENV FROM_NUMBER=${{ env.FROM_NUMBER }}
 
-# run the bot
-CMD ["python3", "bot.py"]
-
+CMD ["python", "test_bot.py", "$DISCORD_TOKEN", "$API_KEY", "$AUTH_KEY", "$FROM_NUMBER"]
