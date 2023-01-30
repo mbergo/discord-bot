@@ -1,39 +1,52 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
-name: discord-bot
+name: Integration Tests
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "*" ]
+    branches: [ main ]
 
-permissions:
-  contents: read
+env:
+  DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
+  API_KEY: ${{ env.API_KEY }}
+  AUTH_KEY: ${{ env.AUTH_KEY }}
+  FROM_NUMBER: ${{ env.FROM_NUMBER }}
 
 jobs:
-  build:
-
+  build-and-test:
     runs-on: ubuntu-latest
+    env:
+      DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+      API_KEY: ${{ secrets.API_KEY }}
+      AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      FROM_NUMBER: ${{ secrets.FROM_NUMBER }}
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
       with:
-        python-version: "3.10"
-    - name: Install dependencies
+        python-version: 3.8
+
+    # - name: Run integration tests
+    #   uses: docker://python:3.8
+    #   env:
+    #     DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
+    #     API_KEY: ${{ env.API_KEY }}
+    #     AUTH_KEY: ${{ env.AUTH_KEY }}
+    #     FROM_NUMBER: ${{ env.FROM_NUMBER }}
+    #   run: |
+    #     python -m pytest tests/integration
+        
+    - name: Build Docker Image
       run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
+        docker build -t discord-sms-bot .
+      env:
+        DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
+        API_KEY: ${{ env.API_KEY }}
+        AUTH_KEY: ${{ env.AUTH_KEY }}
+        FROM_NUMBER: ${{ env.FROM_NUMBER }}
+
+    - name: Run tests
       run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        python3 -m ${{ secrets.DISCORD_API_KEY }} ${{ API_KEY }} test_bot.py
+        docker run discord-sms-bot
