@@ -15,6 +15,7 @@ env:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+    
     env:
       DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
       API_KEY: ${{ secrets.API_KEY }}
