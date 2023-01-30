@@ -3,6 +3,8 @@ name: Integration Tests
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: ["*"]
 
 env:
   DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
