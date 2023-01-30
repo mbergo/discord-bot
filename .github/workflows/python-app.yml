@@ -2,25 +2,20 @@ name: Integration Tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
     branches: ["*"]
 
 env:
-  DISCORD_TOKEN: ${{ env.DISCORD_TOKEN }}
-  API_KEY: ${{ env.API_KEY }}
-  AUTH_KEY: ${{ env.AUTH_KEY }}
-  FROM_NUMBER: ${{ env.FROM_NUMBER }}
+  DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+  API_KEY: ${{ secrets.API_KEY }}
+  AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  FROM_NUMBER: ${{ secrets.FROM_NUMBER }}
+
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    
-    env:
-      DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
-      API_KEY: ${{ secrets.API_KEY }}
-      AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      FROM_NUMBER: ${{ secrets.FROM_NUMBER }}
 
     steps:
     - name: Checkout code
