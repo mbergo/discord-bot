@@ -1,2 +1,4 @@
 openai
 discord
+unittest
+unittest.mock
