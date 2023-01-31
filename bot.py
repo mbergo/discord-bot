@@ -53,7 +53,7 @@ async def predy_whatsapp(ctx, to, message):
         "Content-Type": "application/json"
     }
     # Replace YOUR_WHATSAPP_NUMBER with your WhatsApp Business number
-    from_number = "+5521982083167"
+    from_number = "+55000000000"
     data = {
         "from": from_number,
         "to": to,
@@ -101,4 +101,4 @@ async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str):
     
     await ctx.send(f"{member.mention} was assigned the role {role.name}.")
 
-@bot.run(discord_token)
+bot.run(discord_token)
