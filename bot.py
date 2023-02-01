@@ -7,8 +7,9 @@ import requests
 discord_token = "sys.argv[1]"
 bot = commands.Bot(command_prefix='/', description="GPT-2 Discord Bot", intents=discord.Intents.all())
 
-
+#
 # using predy instead of talk in testing
+#
 @bot.command()
 async def talk(ctx, *, message):
     # Use the GPT-2 API to generate a response
@@ -24,6 +25,10 @@ async def talk(ctx, *, message):
 
     # Send the response to the Discord channel
     await ctx.send(response.choices[0].text)
+
+#
+# create discord channel
+#
 @bot.command()
 def predy_criar_canal(room_id, channel_name, discord_token):
     headers = {
@@ -45,7 +50,10 @@ def predy_criar_canal(room_id, channel_name, discord_token):
         print(f"Successfully created channel '{channel_name}'")
     else:
         print(f"Failed to create channel. Response: {response.text}")
-
+        
+#        
+# Send whatsapp msg        
+#        
 @bot.command()
 async def predy_whatsapp(ctx, to, message):
     # Replace YOUR_AUTH_KEY with your WhatsApp Business API authorization key
@@ -66,8 +74,9 @@ async def predy_whatsapp(ctx, to, message):
         await ctx.send(f"Mensagem enviada com sucesso para {to}.")
     else:
         await ctx.send(f"Erro ao enviar mensagem para {to}: {response.text}")
-
-# Criar canais
+#
+# create groups
+#
 @bot.command()
 async def predy_criar_grupo(ctx, team_name, *participants):
     guild = ctx.guild
@@ -87,7 +96,9 @@ async def predy_criar_grupo(ctx, team_name, *participants):
             await member.add_roles(new_role)
         await ctx.send(f"Grupo {team_name} criado com os seguintes participantes: {', '.join([m.name for m in member_objects])}.")
 
-# Adicionar cargo
+#
+# Add job role
+#
 @bot.command()
 async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str):
     guild = ctx.guild
