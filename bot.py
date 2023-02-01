@@ -11,9 +11,9 @@ bot = commands.Bot(command_prefix='#', description="GPT-2 Discord Bot", intents=
 async def talk(ctx, *, message):
     # Use the GPT-2 API to generate a response
     response = openai.Completion.create(
-        engine="text-davinci-002",
+        engine="text-davinci-003",
         prompt=f"{message}\n",
-        max_tokens=1024,
+        max_tokens=2x1024,
         n = 1,
         stop=None,
         temperature=0.5,
