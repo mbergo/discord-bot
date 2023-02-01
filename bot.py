@@ -5,8 +5,10 @@ import requests
 
 # Get the Discord bot token and GPT-2 API key from the openai_secret_manager
 discord_token = "sys.argv[1]"
-bot = commands.Bot(command_prefix='#', description="GPT-2 Discord Bot", intents=discord.Intents.all())
+bot = commands.Bot(command_prefix='/', description="GPT-2 Discord Bot", intents=discord.Intents.all())
 
+
+# using predy instead of talk in testing
 @bot.command()
 async def talk(ctx, *, message):
     # Use the GPT-2 API to generate a response
