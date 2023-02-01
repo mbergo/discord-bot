@@ -103,19 +103,5 @@ async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str):
     
     await ctx.send(f"{member.mention} was assigned the role {role.name}.")
 
-@bot.command()
-async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str, color: discord.Color):
-    guild = ctx.guild
-    job_title = job_title.capitalize()
-    
-    # Check if the job title role exists, and create it if it doesn't
-    role = discord.utils.get(guild.roles, name=job_title)
-    if role is None:
-        role = await guild.create_role(name=job_title, color=color)
-    
-    # Add the role to the member
-    await member.add_roles(role)
-    
-    await ctx.send(f"{member.mention} was assigned the role {role.name} with color {role.color}.")
 
 bot.run(discord_token)
