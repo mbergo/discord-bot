@@ -4,28 +4,39 @@ import openai
 import requests
 import json
 import re
+import sys
 
 # Get the Discord bot token and GPT-2 API key from the openai_secret_manager
-discord_token = "sys.argv[1]"
-bot = commands.Bot(command_prefix='#', description="GPT-2 Discord Bot", intents=discord.Intents.all())
+if sys.argv[1] == "-h" or sys.argv[1] == "--help":
+    print("Usage: python3 bot.py <discord_token> <openai_api_key> <whatsapp_token> <github_token> <azure_token>")
+    exit(0)
+
+discord_token = sys.argv[1]
+openai_key = sys.argv[2]
+whatsapp_token = sys.argv[3]
+github_token = sys.argv[4]
+azure_token = sys.argv[5]
+
+bot = commands.Bot(command_prefix='/', description="GPT-2 Discord Bot", intents=discord.Intents.all())
 
 @bot.command()
-async def talk(ctx, *, message):
-    # Use the GPT-2 API to generate a response
+async def AI(ctx, *, message):
+    # Use the GPT-3 API to generate a response
     response = openai.Completion.create(
-        engine="text-davinci-002",
+        engine="text-davinci-003",
         prompt=f"{message}\n",
-        max_tokens=1024,
+        max_tokens=2048,
         n = 1,
         stop=None,
         temperature=0.7,
-        api_key = "sys.argv[2]"
+        api_key = openai_key
     )
 
     # Send the response to the Discord channel
     await ctx.send(response.choices[0].text)
+
 @bot.command()
-def predy_criar_canal(room_id, channel_name, discord_token):
+async def AI_criar_canal(room_id, channel_name, discord_token):
     headers = {
         "Authorization": f"Bot {discord_token}",
         "User-Agent": "MyBot/0.0.1",
@@ -47,11 +58,11 @@ def predy_criar_canal(room_id, channel_name, discord_token):
         print(f"Failed to create channel. Response: {response.text}")
 
 @bot.command()
-async def predy_whatsapp(ctx, to, message):
+async def AI_whatsapp(ctx, to, message):
     # Replace YOUR_AUTH_KEY with your WhatsApp Business API authorization key
-    auth_key = "YOUR_AUTH_KEY"
+    auth_key = whatsapp_token
     headers = {
-        "Authorization": f"Bearer {auth_key}",
+        "Authorization": f"Bearer {whatsapp_token}",
         "Content-Type": "application/json"
     }
     # Replace YOUR_WHATSAPP_NUMBER with your WhatsApp Business number
@@ -69,7 +80,7 @@ async def predy_whatsapp(ctx, to, message):
 
 # Criar canais
 @bot.command()
-async def predy_criar_grupo(ctx, team_name, *participants):
+async def AI_criar_grupo(ctx, team_name, *participants):
     guild = ctx.guild
     existing_role = discord.utils.get(guild.roles, name=team_name)
     if not existing_role:
@@ -89,21 +100,6 @@ async def predy_criar_grupo(ctx, team_name, *participants):
 
 # Adicionar cargo
 @bot.command()
-async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str):
-    guild = ctx.guild
-    job_title = job_title.capitalize()
-    
-    # Check if the job title role exists, and create it if it doesn't
-    role = discord.utils.get(guild.roles, name=job_title)
-    if role is None:
-        role = await guild.create_role(name=job_title)
-    
-    # Add the role to the member
-    await member.add_roles(role)
-    
-    await ctx.send(f"{member.mention} was assigned the role {role.name}.")
-
-@bot.command()
 async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str, color: discord.Color):
     guild = ctx.guild
     job_title = job_title.capitalize()
@@ -119,9 +115,9 @@ async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str, col
     await ctx.send(f"{member.mention} was assigned the role {role.name} with color {role.color}.")
 
 @bot.command()
-async def scan_issues(repo, token, bot_cmd):
+async def AI_scan_issues(ctx, repo, github_token, bot_cmd):
     headers = {
-        "Authorization": "Token " + token,
+        "Authorization": "Token " + github_token,
         "Accept": "application/vnd.github+json"
     }
 
@@ -151,26 +147,33 @@ async def scan_issues(repo, token, bot_cmd):
             response = requests.post("https://api.openai.com/v1/engines/davinci-002/jobs",
                                      headers={"Content-Type": "application/json"},
                                      data=json.dumps({"prompt": question, "max_tokens": 1024}),
-                                     auth=("api-key", ))
+                                     auth=(openai_key, ))
+            await ctx.send(f"```{response.text}```")
 
             if response.status_code == 200:
                 reply = response.json()["choices"][0]["text"].strip()
                 comment_url = f"https://api.github.com/repos/{repo}/issues/{issue['number']}/comments"
 
+        await ctx.send(f"===> {reply} posted to {comment_url}") 
+
             
 
 @bot.command
-async def get_commits(org_name, repo_name, branch_name, sys.arg[1]):
+async def AI_get_commits(ctx, branch_name, azure_token):
     headers = {
-        "Authorization": "Bearer " + sys.argv[1],
+        "Authorization": "Bearer " + azure_token,
         "Accept": "application/json"
     }
+    org_name = "predify"
+    repo_name = "PriceGO"
     url = f"https://dev.azure.com/{org_name}/{repo_name}/_apis/git/repositories/{repo_name}/commits?api-version=6.1&$top=10&branch={branch_name}"
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        commits = json.loads(response.text)
-        return [commit["comment"] for commit in commits["value"]]
+        commits = json.loads(response.text) 
+        for commit in commits["value"]["comment"]:
+            await ctx.send(f"{commit}")
     else:
-        return []
+        await ctx.send(f"Erro ao obter commits: {response.text}")
+
 
 bot.run(discord_token)
