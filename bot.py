@@ -6,7 +6,7 @@ import json
 import re
 import sys
 
-# Get the Discord bot token and GPT-2 API key from the openai_secret_manager
+# Get the Discord bot token and GPT-3 API key from the openai_secret_manager
 if sys.argv[1] == "-h" or sys.argv[1] == "--help":
     print("Usage: python3 bot.py <discord_token> <openai_api_key> <whatsapp_token> <github_token> <azure_token>")
     exit(0)
@@ -17,8 +17,12 @@ whatsapp_token = sys.argv[3]
 github_token = sys.argv[4]
 azure_token = sys.argv[5]
 
-bot = commands.Bot(command_prefix='/', description="GPT-2 Discord Bot", intents=discord.Intents.all())
 
+bot = commands.Bot(command_prefix='/', description="GPT-3 Discord Bot", intents=discord.Intents.all())
+
+#
+# using predy instead of talk in testing
+#
 @bot.command()
 async def AI(ctx, *, message):
     # Use the GPT-3 API to generate a response
@@ -35,6 +39,10 @@ async def AI(ctx, *, message):
     # Send the response to the Discord channel
     await ctx.send(response.choices[0].text)
 
+
+#
+# create discord channel
+#
 @bot.command()
 async def AI_criar_canal(room_id, channel_name, discord_token):
     headers = {
@@ -56,7 +64,10 @@ async def AI_criar_canal(room_id, channel_name, discord_token):
         print(f"Successfully created channel '{channel_name}'")
     else:
         print(f"Failed to create channel. Response: {response.text}")
-
+        
+#        
+# Send whatsapp msg        
+#        
 @bot.command()
 async def AI_whatsapp(ctx, to, message):
     # Replace YOUR_AUTH_KEY with your WhatsApp Business API authorization key
@@ -77,8 +88,9 @@ async def AI_whatsapp(ctx, to, message):
         await ctx.send(f"Mensagem enviada com sucesso para {to}.")
     else:
         await ctx.send(f"Erro ao enviar mensagem para {to}: {response.text}")
-
-# Criar canais
+#
+# create groups
+#
 @bot.command()
 async def AI_criar_grupo(ctx, team_name, *participants):
     guild = ctx.guild
@@ -98,7 +110,9 @@ async def AI_criar_grupo(ctx, team_name, *participants):
             await member.add_roles(new_role)
         await ctx.send(f"Grupo {team_name} criado com os seguintes participantes: {', '.join([m.name for m in member_objects])}.")
 
-# Adicionar cargo
+#
+# Add job role
+#
 @bot.command()
 async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str, color: discord.Color):
     guild = ctx.guild
@@ -174,6 +188,7 @@ async def AI_get_commits(ctx, branch_name, azure_token):
             await ctx.send(f"{commit}")
     else:
         await ctx.send(f"Erro ao obter commits: {response.text}")
+
 
 
 bot.run(discord_token)
