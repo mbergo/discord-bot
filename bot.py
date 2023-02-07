@@ -2,6 +2,8 @@ import discord
 from discord.ext import commands
 import openai
 import requests
+import json
+import re
 
 # Get the Discord bot token and GPT-2 API key from the openai_secret_manager
 discord_token = "sys.argv[1]"
@@ -16,7 +18,7 @@ async def talk(ctx, *, message):
         max_tokens=1024,
         n = 1,
         stop=None,
-        temperature=0.5,
+        temperature=0.7,
         api_key = "sys.argv[2]"
     )
 
@@ -115,5 +117,60 @@ async def predy_adicionar_cargo(ctx, member: discord.Member, job_title: str, col
     await member.add_roles(role)
     
     await ctx.send(f"{member.mention} was assigned the role {role.name} with color {role.color}.")
+
+@bot.command()
+async def scan_issues(repo, token, bot_cmd):
+    headers = {
+        "Authorization": "Token " + token,
+        "Accept": "application/vnd.github+json"
+    }
+
+    # Get all open issues in the repository
+    url = f"https://api.github.com/repos/{repo}/issues?state=open"
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        print("Error: Failed to retrieve issues from repository")
+        return
+
+    issues = json.loads(response.text)
+    for issue in issues:
+        # Check if the issue has any tags in the body
+        tags = re.findall(r"/<(.*?)>", issue["body"])
+        if tags:
+            # Add labels to the issue based on the tags found
+            for tag in tags:
+                label_url = f"https://api.github.com/repos/{repo}/issues/{issue['number']}/labels"
+                data = json.dumps([tag])
+                requests.post(label_url, headers=headers, data=data)
+
+        # Check if the issue has a bot command in the body
+        bot_cmd = re.search(r"/bot (.*)", issue["body"])
+        if bot_cmd:
+            # Trigger the bot command and reply to the issue
+            question = bot_cmd.group(1)
+            response = requests.post("https://api.openai.com/v1/engines/davinci-002/jobs",
+                                     headers={"Content-Type": "application/json"},
+                                     data=json.dumps({"prompt": question, "max_tokens": 1024}),
+                                     auth=("api-key", ))
+
+            if response.status_code == 200:
+                reply = response.json()["choices"][0]["text"].strip()
+                comment_url = f"https://api.github.com/repos/{repo}/issues/{issue['number']}/comments"
+
+            
+
+@bot.command
+async def get_commits(org_name, repo_name, branch_name, sys.arg[1]):
+    headers = {
+        "Authorization": "Bearer " + sys.argv[1],
+        "Accept": "application/json"
+    }
+    url = f"https://dev.azure.com/{org_name}/{repo_name}/_apis/git/repositories/{repo_name}/commits?api-version=6.1&$top=10&branch={branch_name}"
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        commits = json.loads(response.text)
+        return [commit["comment"] for commit in commits["value"]]
+    else:
+        return []
 
 bot.run(discord_token)
