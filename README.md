@@ -1,5 +1,5 @@
-# Discord GPT-2 Bot
-A Discord bot that uses GPT-2 to talk to people.
+# Discord GPT-3 Bot
+A Discord bot that uses GPT-3 to talk to people.
 
 ## How to use
 Invite the bot to your Discord server by generating an invite link on the "OAuth2" page. Select the permissions you want the bot to have and generate the link. Have the server owner click on the link to add the bot to the server.
