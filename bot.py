@@ -13,9 +13,9 @@ if sys.argv[1] == "-h" or sys.argv[1] == "--help":
 
 discord_token = sys.argv[1]
 openai_key = sys.argv[2]
-whatsapp_token = sys.argv[3]
-github_token = sys.argv[4]
-azure_token = sys.argv[5]
+whatsapp_token = "dummy data"  #sys.argv[3]
+github_token = "dummy" # sys.argv[4]
+azure_token = "dummy" #sys.argv[5]
 
 
 bot = commands.Bot(command_prefix='/', description="GPT-3 Discord Bot", intents=discord.Intents.all())
