@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11
 
 # create and set working directory
 RUN mkdir -p /app
